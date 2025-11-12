@@ -1,118 +1,129 @@
 import React, { useState } from "react";
-
-async function genECDH() {
-  return await window.crypto.subtle.generateKey(
-    { name: "ECDH", namedCurve: "P-256" },
-    true,
-    ["deriveKey"]
-  );
-}
-async function importRawPublic(rawB64) {
-  const raw = Uint8Array.from(atob(rawB64), c => c.charCodeAt(0)).buffer;
-  return await window.crypto.subtle.importKey("raw", raw, { name: "ECDH", namedCurve: "P-256" }, true, []);
-}
-async function deriveAESGCMKey(privKey, peerPubRaw) {
-  return await window.crypto.subtle.deriveKey(
-    { name: "ECDH", public: peerPubRaw },
-    privKey,
-    { name: "AES-GCM", length: 256 },
-    true,
-    ["encrypt", "decrypt"]
-  );
-}
-function ab2b64(buf) {
-  const bytes = new Uint8Array(buf);
-  let binary = "";
-  for (let i=0;i<bytes.length;i++) binary += String.fromCharCode(bytes[i]);
-  return btoa(binary);
-}
-function b64toab(b64) {
-  const binary = atob(b64);
-  const len = binary.length;
-  const bytes = new Uint8Array(len);
-  for (let i=0;i<len;i++) bytes[i]=binary.charCodeAt(i);
-  return bytes.buffer;
-}
+import { genKeyRSA, encrypt, decrypt } from "../api/rsa";
 
 export default function SecureComm() {
-  const [aPub, setAPub] = useState("");
-  const [bPub, setBPub] = useState("");
-  const [msg, setMsg] = useState("");
-  const [cipher, setCipher] = useState("");
-  const [status, setStatus] = useState("");
+  const [bits, setBits] = useState(2048);
+  const [algorithm, setAlgorithm] = useState("RSA");
+  const [message, setMessage] = useState("");
+  const [publicKey, setPublicKey] = useState("");
+  const [privateKey, setPrivateKey] = useState("");
+  const [encryptedText, setEncryptedText] = useState("");
+  const [decryptedMessage, setDecryptedMessage] = useState("");
 
-  const [aPriv, setAPriv] = useState(null);
-  const [bPriv, setBPriv] = useState(null);
-
-  async function genA() {
-    const kp = await genECDH();
-    setAPriv(kp.privateKey);
-    const raw = await window.crypto.subtle.exportKey("raw", kp.publicKey);
-    setAPub(ab2b64(raw));
-  }
-  async function genB() {
-    const kp = await genECDH();
-    setBPriv(kp.privateKey);
-    const raw = await window.crypto.subtle.exportKey("raw", kp.publicKey);
-    setBPub(ab2b64(raw));
-  }
-
-  async function encrypt() {
-    try {
-      const peerPub = await importRawPublic(bPub);
-      const key = await deriveAESGCMKey(aPriv, peerPub);
-      const iv = window.crypto.getRandomValues(new Uint8Array(12));
-      const enc = await window.crypto.subtle.encrypt({name:"AES-GCM", iv}, key, new TextEncoder().encode(msg));
-      setCipher(JSON.stringify({ iv: ab2b64(iv.buffer), ct: ab2b64(enc) }));
-      setStatus("Encrypted");
-    } catch (e) {
-      console.error(e);
-      setStatus("Error encrypt");
+  const generateKey = async () => {
+    if (algorithm !== "RSA") {
+      alert("Chỉ hỗ trợ RSA tại thời điểm này.");
+      return;
     }
-  }
 
-  async function decrypt() {
+    const keySize = Number(bits) || 512;
     try {
-      const obj = JSON.parse(cipher);
-      const iv = b64toab(obj.iv);
-      const ct = b64toab(obj.ct);
-      const peerPub = await importRawPublic(aPub);
-      const key = await deriveAESGCMKey(bPriv, peerPub);
-      const dec = await window.crypto.subtle.decrypt({name:"AES-GCM", iv: new Uint8Array(iv)}, key, ct);
-      setStatus("Decrypted: " + new TextDecoder().decode(dec));
-    } catch (e) {
-      console.error(e);
-      setStatus("Error decrypt");
+      const result = await genKeyRSA(keySize, algorithm);
+      const pub = result?.publicKeyBase64 ?? result?.publicKey ?? "";
+      const priv = result?.privateKeyBase64 ?? result?.privateKey ?? "";
+      setPublicKey(pub);
+      setPrivateKey(priv);
+    } catch (err) {
+      console.error("Key generation failed:", err);
+      alert(`Key generation failed: ${err?.message ?? err}`);
     }
-  }
+  };
+
+  const encryptMessage = async () => {
+    if (!publicKey) return alert("Chưa có public key để mã hóa.");
+    if (!message) return alert("Nhập message để mã hóa.");
+    try {
+      const resp = await encrypt(algorithm, publicKey, message);
+      const c = resp?.encryptedText ?? "";
+      setEncryptedText(c);
+    } catch (err) {
+      console.error("Encryption failed:", err);
+      alert(`Encryption failed: ${err?.message ?? err}`);
+    }
+  };
+
+  const decryptMessage = async () => {
+    if (!privateKey) return alert("Chưa có private key để giải mã.");
+    if (!encryptedText) return alert("Chưa có dữ liệu để giải mã.");
+    try {
+      const resp = await decrypt(privateKey, algorithm, encryptedText);
+      const plain = resp?.decryptedText ?? "";
+      setDecryptedMessage(plain);
+    } catch (err) {
+      console.error("Decryption failed:", err);
+      alert(`Decryption failed: ${err?.message ?? err}`);
+    }
+  };
 
   return (
     <div>
-      <h2>Secure Communication (Demo ECDH + AES-GCM)</h2>
-      <div style={{display:"flex", gap:12}}>
-        <div style={{flex:1}}>
-          <h4>Peer A</h4>
-          <button onClick={genA}>Generate A</button>
-          <div style={{wordBreak:"break-all"}}><small>{aPub}</small></div>
-        </div>
-        <div style={{flex:1}}>
-          <h4>Peer B</h4>
-          <button onClick={genB}>Generate B</button>
-          <div style={{wordBreak:"break-all"}}><small>{bPub}</small></div>
-        </div>
-      </div>
+      <h2>Secure Communication</h2>
 
-      <div style={{marginTop:12}}>
-        <textarea placeholder="Message to encrypt" value={msg} onChange={e=>setMsg(e.target.value)} rows={3} style={{width:"100%"}} />
-        <button onClick={encrypt}>Encrypt (A - B)</button>
-        <button onClick={decrypt} style={{marginLeft:8}}>Decrypt (B)</button>
-      </div>
+      <section>
+        <h4>Key Generation</h4>
+        <div>
+          <label>
+            Algorithm:&nbsp;
+            <select value={algorithm} onChange={(e) => setAlgorithm(e.target.value)}>
+              <option value="RSA">RSA</option>
+            </select>
+          </label>
+        </div>
 
-      <div style={{marginTop:12}}>
-        <b>Cipher:</b>
-        <pre style={{whiteSpace:"pre-wrap"}}>{cipher}</pre>
-        <div><b>Status:</b> {status}</div>
-      </div>
+        <div>
+          <label>
+            Key Size (bits):&nbsp;
+            <input
+              type="number"
+              min={512}
+              step={256}
+              value={bits}
+              onChange={(e) => setBits(Number(e.target.value))}
+            />
+          </label>
+        </div>
+
+        <button onClick={generateKey}>Generate</button>
+
+        <div>
+          <div>
+            <strong>Public Key:</strong>
+            <pre>{publicKey}</pre>
+          </div>
+          <div>
+            <strong>Private Key:</strong>
+            <pre>{privateKey}</pre>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h4>Encrypt</h4>
+        <textarea
+          placeholder="Message to encrypt"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          rows={4}
+        />
+        <div>
+          <button onClick={encryptMessage}>Encrypt</button>
+        </div>
+        <div>
+          <strong>Encrypted Message:</strong>
+          <pre>{encryptedText}</pre>
+        </div>
+      </section>
+
+      <section>
+        <h4>Decrypt</h4>
+        <div>
+          <button onClick={decryptMessage}>Decrypt</button>
+        </div>
+        <div>
+          <strong>Decrypted Message:</strong>
+          <pre>{decryptedMessage}</pre>
+        </div>
+      </section>
     </div>
   );
 }

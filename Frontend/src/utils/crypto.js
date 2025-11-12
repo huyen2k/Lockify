@@ -15,16 +15,27 @@ export function b642ab(b64) {
   return bytes.buffer;
 }
 
+function ensureArrayBuffer(data) {
+  if (typeof data === "string") {
+    return new TextEncoder().encode(data).buffer;
+  }
+  if (data instanceof Uint8Array) {
+    return data.buffer;
+  }
+  // assume ArrayBuffer already
+  return data;
+}
+
 // Generate RSA key pair extractable (so we can export)
-export async function generateRSAKeyPair() {
+export async function generateRSAKeyPair(bits = 2048, hashAlgorithm = "SHA-256") {
   return await window.crypto.subtle.generateKey(
     {
       name: "RSASSA-PKCS1-v1_5",
-      modulusLength: 2048,
+      modulusLength: bits,
       publicExponent: new Uint8Array([1, 0, 1]),
-      hash: "SHA-256",
+      hash: { name: hashAlgorithm },
     },
-    true, // extractable
+    true,
     ["sign", "verify"]
   );
 }
@@ -35,48 +46,51 @@ export async function exportKeyPairToBase64(keyPair) {
   const priv = await window.crypto.subtle.exportKey("pkcs8", keyPair.privateKey);
   return {
     publicKeyBase64: ab2b64(pub),
-    privateKeyBase64: ab2b64(priv)
+    privateKeyBase64: ab2b64(priv),
   };
 }
 
-// sign ArrayBuffer or Uint8Array => returns base64 signature
-export async function signData(privateKey, dataBuffer) {
+// sign ArrayBuffer or Uint8Array or string => returns base64 signature
+export async function signData(privateKey, data) {
+  // privateKey is expected to be a CryptoKey
+  const dataBuf = ensureArrayBuffer(data);
   const sig = await window.crypto.subtle.sign(
-    "RSASSA-PKCS1-v1_5",
+    { name: "RSASSA-PKCS1-v1_5" },
     privateKey,
-    dataBuffer
+    dataBuf
   );
   return ab2b64(sig);
 }
 
-// verify with publicKey
-export async function verifyData(publicKey, dataBuffer, signatureBase64) {
+// verify with publicKey (CryptoKey) and signatureBase64 and data (string or ArrayBuffer)
+export async function verifyData(publicKey, data, signatureBase64) {
+  const dataBuf = ensureArrayBuffer(data);
   const sigBuf = b642ab(signatureBase64);
   return await window.crypto.subtle.verify(
-    "RSASSA-PKCS1-v1_5",
+    { name: "RSASSA-PKCS1-v1_5" },
     publicKey,
     sigBuf,
-    dataBuffer
+    dataBuf
   );
 }
 
 // import public key from base64 (SPKI) to CryptoKey
-export async function importPublicKeyFromBase64(spkiB64) {
+export async function importPublicKeyFromBase64(spkiB64, hashAlgorithm = "SHA-256") {
   return await window.crypto.subtle.importKey(
     "spki",
     b642ab(spkiB64),
-    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+    { name: "RSASSA-PKCS1-v1_5", hash: { name: hashAlgorithm } },
     true,
     ["verify"]
   );
 }
 
 // import private key from base64 (PKCS8)
-export async function importPrivateKeyFromBase64(pkcs8B64) {
+export async function importPrivateKeyFromBase64(pkcs8B64, hashAlgorithm = "SHA-256") {
   return await window.crypto.subtle.importKey(
     "pkcs8",
     b642ab(pkcs8B64),
-    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+    { name: "RSASSA-PKCS1-v1_5", hash: { name: hashAlgorithm } },
     true,
     ["sign"]
   );

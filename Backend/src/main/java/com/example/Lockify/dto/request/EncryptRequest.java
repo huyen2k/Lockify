@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @Data
 public class EncryptRequest {
-    private String bits;
     private String algorithm;
+    private String publicKey;
     private String message;
 }

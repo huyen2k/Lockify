@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class SignRequest {
     @NotBlank
-    private String signerId; // id of keypair or user
+    private String signerId;
     @NotBlank
-    private String documentBase64; // document content in Base64
-    @NotBlank
-    private String filename;
+    private String message;
+    private String hashAlgorithm;
+    private String algorithm;
 }

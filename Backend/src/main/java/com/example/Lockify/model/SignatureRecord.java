@@ -3,9 +3,10 @@ package com.example.Lockify.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import java.time.Instant;
+import java.util.Date;
 
 @Document(collection = "signatures")
 @Data
@@ -14,10 +15,10 @@ import java.time.Instant;
 public class SignatureRecord {
     @Id
     private String id;
-    private String documentId;    // liên kết tới DocumentRecord.id
-    private String signerId;      // userId/keyId
+    private String signerId;
     private String signatureBase64;
-    private String algorithm = "SHA256withRSA";
-    private Instant createdAt = Instant.now();
+    private String algorithm;
+    @CreatedDate
+    private Date createdAt;
 }
 

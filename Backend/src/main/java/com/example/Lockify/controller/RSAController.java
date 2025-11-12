@@ -2,8 +2,10 @@ package com.example.Lockify.controller;
 
 import com.example.Lockify.dto.request.DecryptRequest;
 import com.example.Lockify.dto.request.EncryptRequest;
+import com.example.Lockify.dto.request.GenKeyRequest;
 import com.example.Lockify.dto.response.DecryptResponse;
 import com.example.Lockify.dto.response.EncryptResponse;
+import com.example.Lockify.dto.response.GenKeyResponse;
 import com.example.Lockify.service.RSAService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -20,6 +22,11 @@ public class RSAController {
 
     @Autowired
     private RSAService rsaService;
+
+    @PostMapping("/keygen")
+    public GenKeyResponse keyGen(@RequestBody GenKeyRequest request) throws Exception {
+        return rsaService.genKey(request);
+    }
 
     @PostMapping("/encrypt")
     public EncryptResponse encrypt(@RequestBody EncryptRequest request) throws Exception {

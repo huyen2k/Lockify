@@ -9,6 +9,7 @@ import com.example.Lockify.service.SignatureService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 public class SignatureController {
 
+    @Autowired
     private SignatureService signatureService;
 
     // 1) Generate key pair for a given id (e.g. userId)
@@ -26,7 +28,7 @@ public class SignatureController {
         if (req.getId() == null || req.getId().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
-        KeyResponse resp = signatureService.generateAndStoreKeyPair(req.getId(), 2048);
+        KeyResponse resp = signatureService.generateAndStoreKeyPair(req);
         return ResponseEntity.ok(resp);
     }
 
@@ -42,7 +44,7 @@ public class SignatureController {
     @PostMapping("/sign")
     public ResponseEntity<?> signDocument(@Valid @RequestBody SignRequest req) {
         try {
-            SignatureRecord sr = signatureService.signDocument(req.getSignerId(), req.getDocumentBase64(), req.getFilename());
+            SignatureRecord sr = signatureService.signDocument(req);
             return ResponseEntity.ok(sr);
         } catch (IllegalArgumentException e){
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -56,7 +58,7 @@ public class SignatureController {
     @PostMapping("/verify")
     public ResponseEntity<?> verify(@Valid @RequestBody VerifyRequest req) {
         try {
-            boolean ok = signatureService.verify(req.getPublicKeyBase64(), req.getDocumentBase64(), req.getSignatureBase64());
+            boolean ok = signatureService.verify(req);
             return ResponseEntity.ok().body(java.util.Map.of("valid", ok));
         } catch (Exception ex) {
             ex.printStackTrace();

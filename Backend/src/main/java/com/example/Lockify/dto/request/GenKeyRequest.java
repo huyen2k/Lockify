@@ -7,8 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Data
-public class DecryptRequest {
-    private String privateKey;
+public class GenKeyRequest {
+    private String bits;
     private String algorithm;
-    private String encryptedText;
 }

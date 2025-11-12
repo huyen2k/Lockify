@@ -6,10 +6,12 @@ import lombok.Data;
 @Data
 public class VerifyRequest {
     @NotBlank
-    private String publicKeyBase64; // public key in base64/PEM
+    private String publicKey;
     @NotBlank
-    private String documentBase64;
+    private String message;
     @NotBlank
-    private String signatureBase64;
+    private String signature;
+    private String algorithm;
+    private String hashAlgorithm;
 
 }

@@ -12,9 +12,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 public class RSAKeyPair {
     @Id
-    private String id;            // e.g. userId or keyId
-    private String publicKey;    // Base64 PEM (or plain base64)
-    private String privateKey;   // Base64 (NOTE: recommend encrypting)
-    private String algorithm = "RSA";
-    private int keySize = 2048;
+    private String id;
+    private String publicKey;
+    private String privateKey;
+    private String algorithm;
+    private int keySize;
 }

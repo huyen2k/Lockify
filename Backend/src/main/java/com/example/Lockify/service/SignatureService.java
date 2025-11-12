@@ -1,5 +1,8 @@
 package com.example.Lockify.service;
 
+import com.example.Lockify.dto.request.KeyExchangeRequest;
+import com.example.Lockify.dto.request.SignRequest;
+import com.example.Lockify.dto.request.VerifyRequest;
 import com.example.Lockify.dto.response.KeyResponse;
 import com.example.Lockify.model.DocumentRecord;
 import com.example.Lockify.model.RSAKeyPair;
@@ -29,18 +32,20 @@ public class SignatureService {
     @Autowired
     private SignatureRepository signatureRepository;
 
-    public KeyResponse generateAndStoreKeyPair(String id, int keySize) throws NoSuchAlgorithmException {
-        KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-        kpg.initialize(keySize);
+    public KeyResponse generateAndStoreKeyPair(KeyExchangeRequest request) throws NoSuchAlgorithmException {
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance(request.getAlgorithm());
+        kpg.initialize(Integer.parseInt(request.getBits()));
         KeyPair kp = kpg.generateKeyPair();
 
         String pubB64 = Base64.encodeBase64String(kp.getPublic().getEncoded());
         String privB64 = Base64.encodeBase64String(kp.getPrivate().getEncoded());
 
         RSAKeyPair rsaKeyPair = new RSAKeyPair();
-        rsaKeyPair.setId(id);
+        rsaKeyPair.setId(request.getId());
         rsaKeyPair.setPublicKey(pubB64);
         rsaKeyPair.setPrivateKey(privB64);
+        rsaKeyPair.setAlgorithm(request.getAlgorithm());
+        rsaKeyPair.setKeySize(Integer.parseInt(request.getBits()));
         keyPairRepository.save(rsaKeyPair);
         return new KeyResponse(rsaKeyPair.getId(), rsaKeyPair.getPublicKey());
     }
@@ -49,50 +54,55 @@ public class SignatureService {
         return keyPairRepository.findById(id);
     }
 
-    public SignatureRecord signDocument(String signerId, String documentBase64, String filename) throws Exception {
-        // save document
-        DocumentRecord doc = new DocumentRecord();
-        doc.setOwnerId(signerId);
-        doc.setFilename(filename);
-        doc.setContentBase64(documentBase64);
-        doc = documentRepository.save(doc);
+    public SignatureRecord signDocument(SignRequest request) throws Exception {
+
+        String hash = request.getHashAlgorithm();
+        String normalizedHash = hash.replaceAll("-", "").toUpperCase();
+        String algorithm = request.getAlgorithm().toUpperCase();
+        String signingAlgorithm = normalizedHash + "with" + algorithm;
+
 
         // get keypair
-        RSAKeyPair keyPair = keyPairRepository.findById(signerId)
-                .orElseThrow(() -> new IllegalArgumentException("Key pair not found for id: " + signerId));
+        RSAKeyPair keyPair = keyPairRepository.findById(request.getSignerId())
+                .orElseThrow(() -> new IllegalArgumentException("Key pair not found for id: " + request.getSignerId()));
 
         byte[] privBytes = Base64.decodeBase64(keyPair.getPrivateKey());
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privBytes);
-        KeyFactory kf = KeyFactory.getInstance("RSA");
+        KeyFactory kf = KeyFactory.getInstance(request.getAlgorithm());
         PrivateKey privateKey = kf.generatePrivate(keySpec);
 
         // signature
-        java.security.Signature signature = java.security.Signature.getInstance("SHA256withRSA");
+        java.security.Signature signature = java.security.Signature.getInstance(signingAlgorithm);
         signature.initSign(privateKey);
-        byte[] docBytes = Base64.decodeBase64(documentBase64);
+        byte[] docBytes = request.getMessage().getBytes();
         signature.update(docBytes);
         byte[] sigBytes = signature.sign();
         String sigB64 = Base64.encodeBase64String(sigBytes);
 
         SignatureRecord sr = new SignatureRecord();
-        sr.setDocumentId(doc.getId());
-        sr.setSignerId(signerId);
+        sr.setSignerId(request.getSignerId());
         sr.setSignatureBase64(sigB64);
+        sr.setAlgorithm(signingAlgorithm);
         signatureRepository.save(sr);
         return sr;
     }
 
-    public boolean verify(String publicKeyBase64, String documentBase64, String signatureBase64) throws Exception {
-        byte[] pubBytes = Base64.decodeBase64(publicKeyBase64);
+    public boolean verify(VerifyRequest request) throws Exception {
+        byte[] pubBytes = Base64.decodeBase64(request.getPublicKey());
         X509EncodedKeySpec spec = new X509EncodedKeySpec(pubBytes);
-        KeyFactory kf = KeyFactory.getInstance("RSA");
+        KeyFactory kf = KeyFactory.getInstance(request.getAlgorithm());
         PublicKey pub = kf.generatePublic(spec);
 
-        java.security.Signature signature = java.security.Signature.getInstance("SHA256withRSA");
+        String hash = request.getHashAlgorithm();
+        String normalizedHash = hash.replaceAll("-", "").toUpperCase();
+        String algorithm = request.getAlgorithm().toUpperCase();
+        String signingAlgorithm = normalizedHash + "with" + algorithm;
+
+        java.security.Signature signature = java.security.Signature.getInstance(signingAlgorithm);
         signature.initVerify(pub);
-        byte[] docBytes = Base64.decodeBase64(documentBase64);
+        byte[] docBytes = request.getMessage().getBytes();
         signature.update(docBytes);
-        byte[] sigBytes = Base64.decodeBase64(signatureBase64);
+        byte[] sigBytes = Base64.decodeBase64(request.getSignature());
         return signature.verify(sigBytes);
     }
 }

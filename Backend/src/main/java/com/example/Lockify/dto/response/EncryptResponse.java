@@ -8,7 +8,5 @@ import lombok.*;
 @Builder
 @Data
 public class EncryptResponse {
-    private String privateKeg;
-    private String publicKey;
     private String encryptedText;
 }
