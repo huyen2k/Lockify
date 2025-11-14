@@ -7,7 +7,13 @@ import {
   signData,
   importPrivateKeyFromBase64,
 } from "../utils/crypto";
-import { getServerPublicKey, createServerKey, signDocument, verify } from "../api/signature";
+import {
+  getServerPublicKey,
+  createServerKey,
+  signDocument,
+  verify,
+} from "../api/signature";
+import "../styles/DigitalSignature.css";
 
 export default function DigitalSignature() {
   const [serverPublic, setServerPublic] = useState(null);
@@ -34,7 +40,10 @@ export default function DigitalSignature() {
           return;
         }
         try {
-          const privKey = await importPrivateKeyFromBase64(clientPrivate, hashAlgorithm);
+          const privKey = await importPrivateKeyFromBase64(
+            clientPrivate,
+            hashAlgorithm
+          );
           const sigB64 = await signData(privKey, message);
           setSignature(sigB64);
         } catch (e) {
@@ -48,7 +57,12 @@ export default function DigitalSignature() {
           return;
         }
         try {
-          const resp = await signDocument(serverKeyId, message, hashAlgorithm, algorithm);
+          const resp = await signDocument(
+            serverKeyId,
+            message,
+            hashAlgorithm,
+            algorithm
+          );
           // assume resp.signatureBase64 exists
           setSignature(resp.signatureBase64 || resp.signature);
         } catch (e) {
@@ -63,7 +77,10 @@ export default function DigitalSignature() {
 
   async function handleClientGenKey() {
     try {
-      const kp = await generateRSAKeyPair(bits || 2048, hashAlgorithm || "SHA-256");
+      const kp = await generateRSAKeyPair(
+        bits || 2048,
+        hashAlgorithm || "SHA-256"
+      );
       const exported = await exportKeyPairToBase64(kp);
       setClientPublic(exported.publicKeyBase64);
       setClientPrivate(exported.privateKeyBase64);
@@ -106,7 +123,13 @@ export default function DigitalSignature() {
         // we're assuming `verify` is an API call that accepts (pubKey, message, signature, algorithm, hash)
         // If verify is client-side, you'd import key and call verifyData instead.
         const pubKey = clientPublic;
-        const resp = await verify(pubKey, messageverify || message, signature, algorithm, hashAlgorithm);
+        const resp = await verify(
+          pubKey,
+          messageverify || message,
+          signature,
+          algorithm,
+          hashAlgorithm
+        );
         // assuming resp returns { valid: true } or boolean
         const valid = typeof resp === "boolean" ? resp : resp?.valid;
         setValidationResult(valid ? "Valid ✅" : "Invalid ❌");
@@ -116,8 +139,15 @@ export default function DigitalSignature() {
           setValidationResult("No server public key");
           return;
         }
-        const imported = await importPublicKeyFromBase64(serverPublic, hashAlgorithm);
-        const valid = await verifyData(imported, messageverify || message, signature);
+        const imported = await importPublicKeyFromBase64(
+          serverPublic,
+          hashAlgorithm
+        );
+        const valid = await verifyData(
+          imported,
+          messageverify || message,
+          signature
+        );
         setValidationResult(valid ? "Valid ✅" : "Invalid ❌");
       }
     } catch (e) {
@@ -127,98 +157,221 @@ export default function DigitalSignature() {
   };
 
   return (
-    <div>
+    <div className="digital-page">
       <h2>Digital Signature</h2>
 
-      <div>
-        <div>
-          <h3>Client Key Manager</h3>
-          <select value={algorithm} onChange={(e) => setAlgorithm(e.target.value)}>
-            <option value="RSA">RSA</option>
-          </select>
+      <div className="digital-grid">
+        {/* LEFT: main controls */}
+        <div className="card">
+          {/* Client Key Manager */}
+          <div className="group">
+            <h3>Client Key Manager</h3>
 
-          <select value={hashAlgorithm} onChange={(e) => setHashAlgorithm(e.target.value)}>
-            <option value="SHA-256">SHA-256</option>
-            <option value="SHA-384">SHA-384</option>
-            <option value="SHA-512">SHA-512</option>
-          </select>
+            <div className="form-row">
+              <label>Algorithm</label>
+              <select
+                value={algorithm}
+                onChange={(e) => setAlgorithm(e.target.value)}
+              >
+                <option value="RSA">RSA</option>
+              </select>
 
-          <input
-            type="number"
-            placeholder="Key Size (bits)"
-            value={bits}
-            onChange={(e) => setBits(Number(e.target.value))}
-          />
-          <button onClick={handleClientGenKey}>Generate Key</button>
-          <div>
-            <div>
-              <label>Public (base64):</label> {clientPublic}
+              <label>Hash</label>
+              <select
+                value={hashAlgorithm}
+                onChange={(e) => setHashAlgorithm(e.target.value)}
+              >
+                <option value="SHA-256">SHA-256</option>
+                <option value="SHA-384">SHA-384</option>
+                <option value="SHA-512">SHA-512</option>
+              </select>
+
+              <label>Key Size (bits)</label>
+              <input
+                type="number"
+                placeholder="Key Size (bits)"
+                min={512}
+                max={4096}
+                step={256}
+                value={bits}
+                onChange={(e) => setBits(Number(e.target.value))}
+              />
+
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  className="btn btn-primary"
+                  onClick={handleClientGenKey}
+                >
+                  Generate Key
+                </button>
+              </div>
             </div>
-            <div>
-              <label>Private (base64):</label> {clientPrivate}
+
+            {/* KEY INPUTS - PUBLIC / PRIVATE */}
+            <div style={{ marginTop: 12 }}>
+              <div className="key-field">
+                <label>Public Key</label>
+                <div className="key-input-row">
+                  <input
+                    type="text"
+                    value={clientPublic}
+                    placeholder="Input or generated public key"
+                    onChange={(e) => setClientPublic(e.target.value)}
+                  />
+                  <button
+                    className="btn btn-secondary copy-btn"
+                    onClick={() => navigator.clipboard.writeText(clientPublic)}
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+
+              <div className="key-field">
+                <label>Private Key</label>
+                <div className="key-input-row">
+                  <input
+                    type="text"
+                    value={clientPrivate}
+                    placeholder="Input or generated private key"
+                    onChange={(e) => setClientPrivate(e.target.value)}
+                  />
+                  <button
+                    className="btn btn-secondary copy-btn"
+                    onClick={() => navigator.clipboard.writeText(clientPrivate)}
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr
+            style={{
+              border: "none",
+              height: 1,
+              background: "rgba(15,23,42,0.04)",
+              margin: "16px 0",
+            }}
+          />
+
+          {/* Server Key Manager */}
+          <div className="group">
+            <h4>Server Key Manager</h4>
+
+            <div className="form-row">
+              <label>Server Key Id</label>
+              <input
+                placeholder="server key id (e.g. alice)"
+                value={serverKeyId}
+                onChange={(e) => setServerKeyId(e.target.value)}
+              />
+            </div>
+
+            <div className="server-actions">
+              <button className="btn btn-primary" onClick={handleCreateServer}>
+                Create on server
+              </button>
+              <button className="btn btn-ghost" onClick={handleFetchServer}>
+                Fetch public key
+              </button>
+            </div>
+
+            <div style={{ marginTop: 10 }}>
+              <label style={{ fontWeight: 600, color: "var(--muted)" }}>
+                Server public (base64):
+              </label>
+              <div className="key-block">
+                {serverPublic || (
+                  <span style={{ color: "var(--muted)" }}>—</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <hr
+            style={{
+              border: "none",
+              height: 1,
+              background: "rgba(15,23,42,0.04)",
+              margin: "16px 0",
+            }}
+          />
+
+          {/* Sign document */}
+          <div className="group">
+            <h3>Sign document</h3>
+
+            <div style={{ marginTop: 10 }}>
+              <textarea
+                placeholder="Message to sign"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              />
+            </div>
+
+            <div className="form-row" style={{ marginTop: 10 }}>
+              <label>Method</label>
+              <select
+                value={method}
+                onChange={(e) => setMethod(e.target.value)}
+              >
+                <option value="client">Client-side sign</option>
+                <option value="server">Server-side sign</option>
+              </select>
+            </div>
+
+            <div style={{ marginTop: 10 }}>
+              <div style={{ fontWeight: 600 }}>Signature:</div>
+              <div className="key-block">
+                {signature || <span style={{ color: "var(--muted)" }}>—</span>}
+              </div>
+            </div>
+          </div>
+
+          <hr
+            style={{
+              border: "none",
+              height: 1,
+              background: "rgba(15,23,42,0.04)",
+              margin: "16px 0",
+            }}
+          />
+
+          {/* Verify signature */}
+          <div className="group">
+            <h3>Verify signature</h3>
+
+            <div style={{ marginTop: 8 }}>
+              <textarea
+                placeholder="Message to verify (leave empty to use signed message)"
+                value={messageverify}
+                onChange={(e) => setMessageVerify(e.target.value)}
+              />
+            </div>
+
+            <div style={{ marginTop: 10 }}>
+              <button
+                className="btn btn-primary"
+                onClick={() => verifyMessage()}
+              >
+                Verify
+              </button>
+            </div>
+
+            <div className="verify-result">
+              <div style={{ fontWeight: 600 }}>
+                {method === "client" ? "Server verify:" : "Client verify:"}
+              </div>
+              <div className="status">
+                {validationResult ?? (
+                  <span style={{ color: "var(--muted)" }}>—</span>
+                )}
+              </div>
             </div>
           </div>
         </div>
-
-        <hr />
-        <div>
-          <h4>Server Key Manager</h4>
-          <input
-            placeholder="server key id (e.g. alice)"
-            value={serverKeyId}
-            onChange={(e) => setServerKeyId(e.target.value)}
-          />
-          <button onClick={handleCreateServer}>
-            Create on server
-          </button>
-          <button onClick={handleFetchServer}>
-            Fetch public key
-          </button>
-          <div>
-            <label>Server public (base64):</label>
-            <pre>{serverPublic}</pre>
-          </div>
-        </div>
-      </div>
-      <hr />
-
-      <div>
-        <h3>Sign document</h3>
-        <div>
-          <textarea placeholder="Message to sign" value={message} onChange={(e) => setMessage(e.target.value)} />
-        </div>
-        <div>
-          <select value={method} onChange={(e) => setMethod(e.target.value)}>
-            <option value="client">Client-side sign</option>
-            <option value="server">Server-side sign</option>
-          </select>
-        </div>
-
-        <div>
-          <label>Signature: </label> {signature}
-        </div>
-      </div>
-
-      <div>
-        <h3>Verify signature</h3>
-        <div>
-          <textarea
-            placeholder="Message to verify (leave empty to use signed message)"
-            value={messageverify}
-            onChange={(e) => setMessageVerify(e.target.value)}
-          />
-          <button onClick={() => verifyMessage()}>Verify</button>
-        </div>
-
-        {method === "client" ? (
-          <div>
-            <label>Server verify: </label> {validationResult}
-          </div>
-        ) : (
-          <div>
-            <label>Client verify: </label> {validationResult}
-          </div>
-        )}
       </div>
     </div>
   );

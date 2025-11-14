@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { genKeyRSA, encrypt, decrypt } from "../api/rsa";
+import "../styles/SecureComm.css";
 
 export default function SecureComm() {
   const [bits, setBits] = useState(2048);
@@ -56,74 +57,119 @@ export default function SecureComm() {
   };
 
   return (
-    <div>
+    <div className="secure-page">
       <h2>Secure Communication</h2>
 
-      <section>
-        <h4>Key Generation</h4>
-        <div>
-          <label>
-            Algorithm:&nbsp;
-            <select value={algorithm} onChange={(e) => setAlgorithm(e.target.value)}>
-              <option value="RSA">RSA</option>
-            </select>
-          </label>
-        </div>
+      <div className="secure-grid">
+        {/* MAIN COLUMN */}
+        <div className="main-column">
+          {/* Key Generation card */}
+          <div className="card section">
+            <h4>Key Generation</h4>
 
-        <div>
-          <label>
-            Key Size (bits):&nbsp;
-            <input
-              type="number"
-              min={512}
-              step={256}
-              value={bits}
-              onChange={(e) => setBits(Number(e.target.value))}
+            {/* --- Nhóm chọn Algorithm + Key Size trong 1 khung --- */}
+            <div className="value-grid">
+              <div>
+                <label>Algorithm:</label>
+                <select value={algorithm} onChange={(e) => setAlgorithm(e.target.value)}>
+                  <option value="RSA">RSA</option>
+                </select>
+              </div>
+
+              <div>
+                <label>Key Size (bits):</label>
+                <input
+                  type="number"
+                  min={512}
+                  max={4096}
+                  step={256}
+                  value={bits}
+                  onChange={(e) => setBits(Number(e.target.value))}
+                />
+              </div>
+
+              <div style={{ alignSelf: 'end' }}>
+                <button className="btn btn-primary" onClick={generateKey}>Generate</button>
+              </div>
+            </div>
+
+            {/* KEY INPUTS - PUBLIC / PRIVATE */}
+            <div style={{ marginTop: 12 }}>
+              <div className="key-field">
+                <label>Public Key</label>
+                <div className="key-input-row">
+                  <input
+                    type="text"
+                    value={publicKey}
+                    placeholder="Input or generated public key"
+                    onChange={(e) => setPublicKey(e.target.value)}
+                  />
+                  <button
+                    className="btn btn-secondary copy-btn"
+                    onClick={() => navigator.clipboard.writeText(publicKey)}
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+
+              <div className="key-field">
+                <label>Private Key</label>
+                <div className="key-input-row">
+                  <input
+                    type="text"
+                    value={privateKey}
+                    placeholder="Input or generated private key"
+                    onChange={(e) => setPrivateKey(e.target.value)}
+                  />
+                  <button
+                    className="btn btn-secondary copy-btn"
+                    onClick={() => navigator.clipboard.writeText(privateKey)}
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          {/* Encrypt card */}
+          <div className="card section">
+            <h4>Encrypt</h4>
+
+            <textarea
+              placeholder="Message to encrypt"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              rows={4}
             />
-          </label>
-        </div>
 
-        <button onClick={generateKey}>Generate</button>
+            <div style={{ marginTop: 10 }}>
+              <button className="btn btn-primary" onClick={encryptMessage}>Encrypt</button>
+            </div>
 
-        <div>
-          <div>
-            <strong>Public Key:</strong>
-            <pre>{publicKey}</pre>
+            <div className="result" style={{ marginTop: 12 }}>
+              <strong>Encrypted Message:</strong>
+              <div style={{ marginTop: 8 }}>{encryptedText || <span style={{ color: 'var(--muted)' }}>—</span>}</div>
+            </div>
           </div>
-          <div>
-            <strong>Private Key:</strong>
-            <pre>{privateKey}</pre>
+
+          {/* Decrypt card */}
+          <div className="card section">
+            <h4>Decrypt</h4>
+
+            <div style={{ marginTop: 6 }}>
+              <button className="btn btn-primary" onClick={decryptMessage}>Decrypt</button>
+            </div>
+
+            <div className="result" style={{ marginTop: 12 }}>
+              <strong>Decrypted Message:</strong>
+              <div style={{ marginTop: 8 }}>{decryptedMessage || <span style={{ color: 'var(--muted)' }}>—</span>}</div>
+            </div>
           </div>
         </div>
-      </section>
-
-      <section>
-        <h4>Encrypt</h4>
-        <textarea
-          placeholder="Message to encrypt"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          rows={4}
-        />
-        <div>
-          <button onClick={encryptMessage}>Encrypt</button>
-        </div>
-        <div>
-          <strong>Encrypted Message:</strong>
-          <pre>{encryptedText}</pre>
-        </div>
-      </section>
-
-      <section>
-        <h4>Decrypt</h4>
-        <div>
-          <button onClick={decryptMessage}>Decrypt</button>
-        </div>
-        <div>
-          <strong>Decrypted Message:</strong>
-          <pre>{decryptedMessage}</pre>
-        </div>
-      </section>
+      </div>
     </div>
   );
 }
