@@ -94,28 +94,34 @@ export default function SecureComm() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [val_p, val_q]);
 
-  function transformMessageToCipherValues(messageStr, n) {
+  // JS tương đương với hàm Java bạn đưa
+  function transformMessageToCipherValues(messageStr, nBigInt) {
     if (!messageStr) return [];
-    if (!n) throw new Error("Invalid modulus n (set p and q).");
+    if (!nBigInt) throw new Error("Invalid modulus n");
+
+    // tính bitLength của n
+    const bitLen = nBigInt.toString(2).length;
+    const blockSize = Math.floor(bitLen / 8) - 1;
+    if (blockSize <= 0) throw new Error("Modulus n too small. Use larger key.");
+
     const encoder = new TextEncoder();
+    const allBytes = encoder.encode(messageStr); // Uint8Array toàn bộ message UTF-8
+
     const out = [];
-    let i = 0;
-    while (i < messageStr.length) {
-      const cp = messageStr.codePointAt(i);
-      const char = String.fromCodePoint(cp);
-      const bytes = encoder.encode(char);
+    for (let offset = 0; offset < allBytes.length; offset += blockSize) {
+      const len = Math.min(blockSize, allBytes.length - offset);
       let m = 0n;
-      for (let j = 0; j < bytes.length; j++) {
-        m = (m << 8n) + BigInt(bytes[j]);
+      for (let j = 0; j < len; j++) {
+        m = (m << 8n) + BigInt(allBytes[offset + j]);
       }
-      if (m >= n) {
-        throw new Error(`Ký tự "${char}" có giá trị số ${m} ≥ n (${n}). Vui lòng dùng p/q lớn hơn hoặc Generate key lớn hơn.`);
+      if (m >= nBigInt) {
+        throw new Error(`Block value >= n. Increase key size.`);
       }
       out.push(m);
-      i += char.length;
     }
     return out;
   }
+
 
   useEffect(() => {
     if (!message) {
