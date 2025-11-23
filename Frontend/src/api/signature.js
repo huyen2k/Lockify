@@ -1,4 +1,5 @@
-export const API_BASE = "http://localhost:8080/api/signature";
+const api = import.meta.env.VITE_API_URL;
+export const API_BASE = `${api}/api/signature`;
 
 export async function createServerKey(bits, serverKeyId) {
     

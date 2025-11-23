@@ -2,16 +2,8 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import "../styles/TrialDivision.css";
 
-/**
- * TrialDivision
- * - Giữ nguyên logic từ file gốc (POST /api/attack/trial)
- * - Phần "explain" chuyển sang tiếng Việt và được đưa ra ngoài, hiển thị rõ ràng
- *
- * Props: e, n
- */
-
-// API base (giữ nguyên)
-export const API_BASE = "http://localhost:8080/api/attack";
+const api = import.meta.env.VITE_API_URL;
+export const API_BASE = `${api}/api/attack`;
 async function runTrial(e, n) {
     const requestBody = { e: String(e), n: String(n) };
     const resp = await fetch(`${API_BASE}/trial`, {

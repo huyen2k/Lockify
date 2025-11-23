@@ -1,4 +1,5 @@
-export const API_BASE = "http://localhost:8080/api/rsa";
+const api = import.meta.env.VITE_API_URL;
+export const API_BASE = `${api}/api/rsa`;
 
 export async function genKeyRSA(bits) {
     

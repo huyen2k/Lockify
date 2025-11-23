@@ -1,17 +1,9 @@
 // /mnt/data/Quadratic.jsx
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "../styles/QuadraticSieve.css";
-import { s } from "framer-motion/client";
 
-/**
- * Quadratic (UI) - ExplanationPanel version
- * - removes step editor
- * - adds ExplanationPanel that explains QS and shows dynamic computed values
- *
- * Save as /mnt/data/Quadratic.jsx
- */
-
-export const API_BASE = "http://localhost:8080/api/attack";
+const api = import.meta.env.VITE_API_URL;
+export const API_BASE = `${api}/api/attack`;
 
 async function runQS(e, n, bound, interval) {
     const requestBody = { e: String(e), n: String(n), bound: String(bound), interval: String(interval) };

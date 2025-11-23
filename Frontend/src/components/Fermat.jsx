@@ -2,7 +2,8 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import "../styles/Fermat.css";
 
-export const API_BASE = "http://localhost:8080/api/attack";
+const api = import.meta.env.VITE_API_URL;
+export const API_BASE = `${api}/api/attack`;
 
 async function runFermatApi(e, n) {
     const resp = await fetch(`${API_BASE}/fermat`, {

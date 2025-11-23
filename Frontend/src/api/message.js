@@ -1,4 +1,5 @@
-export const API_BASE = "http://localhost:8080/api/messages";
+const api = import.meta.env.VITE_API_URL;
+export const API_BASE = `${api}/api/messages`;
 
 export async function sendMessage(cipherBase64, signatureBase64, plaintext, fromId, toId) {
     
