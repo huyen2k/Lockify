@@ -1,10 +1,9 @@
 export const API_BASE = "http://localhost:8080/api/signature";
 
-export async function createServerKey(bits, algorithm, serverKeyId) {
+export async function createServerKey(bits, serverKeyId) {
     
     const requestBody = {
         bits: String(bits),
-        algorithm: algorithm,
         id: serverKeyId
     };
 
@@ -21,9 +20,9 @@ export async function createServerKey(bits, algorithm, serverKeyId) {
     return res.json();
 }
 
-export async function getServerPublicKey(serverKeyId) {
+export async function getServerKey(serverKeyId) {
     
-    const res = await fetch(`${API_BASE}/public/${serverKeyId}`, {
+    const res = await fetch(`${API_BASE}/${serverKeyId}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" }
     });
@@ -35,13 +34,12 @@ export async function getServerPublicKey(serverKeyId) {
     return res.json();
 }
 
-export async function signDocument(signerId, message, hashAlgorithm, algorithm) {
+export async function signDocument(signerId, message, hashAlgorithm) {
     
     const requestBody = {
         signerId: signerId,
         message: message,
-        hashAlgorithm: hashAlgorithm,
-        algorithm: algorithm
+        hashAlgorithm: hashAlgorithm
     };
 
     const res = await fetch(`${API_BASE}/sign`, {
@@ -57,13 +55,12 @@ export async function signDocument(signerId, message, hashAlgorithm, algorithm) 
     return res.json();
 }
 
-export async function verify(publicKey, message, signature, algorithm, hashAlgorithm) {
+export async function verify(publicKey, message, signature, hashAlgorithm) {
     
     const requestBody = {
         publicKey: publicKey,
         message: message,
         signature: signature,
-        algorithm: algorithm,
         hashAlgorithm: hashAlgorithm
     };
 

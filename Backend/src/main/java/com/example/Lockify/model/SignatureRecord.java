@@ -1,6 +1,7 @@
 package com.example.Lockify.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,12 +13,12 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class SignatureRecord {
     @Id
     private String id;
     private String signerId;
-    private String signatureBase64;
-    private String algorithm;
+    private String signature;
     @CreatedDate
     private Date createdAt;
 }

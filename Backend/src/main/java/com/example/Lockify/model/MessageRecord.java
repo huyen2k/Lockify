@@ -7,17 +7,20 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.Instant;
+import java.util.Date;
 
-@Document(collection = "documents")
+@Document(collection = "messages")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DocumentRecord {
+public class MessageRecord {
     @Id
     private String id;
-    private String ownerId;
-    private String filename;
-    private String contentBase64;
+    private String fromId;
+    private String toId;
+    private String cipherBase64;
+    private String signatureBase64;
+    private String plaintext;
     @CreatedDate
-    private Instant createdAt;
+    private Date createdAt;
 }

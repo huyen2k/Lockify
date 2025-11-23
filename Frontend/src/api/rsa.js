@@ -1,10 +1,9 @@
 export const API_BASE = "http://localhost:8080/api/rsa";
 
-export async function genKeyRSA(bits, algorithm) {
+export async function genKeyRSA(bits) {
     
     const requestBody = {
-        bits: String(bits),
-        algorithm: algorithm 
+        bits: String(bits)
     };
 
     const res = await fetch(`${API_BASE}/keygen`, {
@@ -20,10 +19,9 @@ export async function genKeyRSA(bits, algorithm) {
     return res.json();
 }
 
-export async function encrypt(algorithm, publicKey, message) {
+export async function encrypt(publicKey, message) {
     
     const requestBody = {
-        algorithm: algorithm,
         publicKey: publicKey,
         message: message
     };
@@ -41,11 +39,10 @@ export async function encrypt(algorithm, publicKey, message) {
     return res.json();
 }
 
-export async function decrypt(privateKey, algorithm, encryptedText) {
+export async function decrypt(privateKey, encryptedText) {
     
     const requestBody = {
         privateKey: privateKey,
-        algorithm: algorithm,
         encryptedText: encryptedText
     };
 
@@ -59,5 +56,40 @@ export async function decrypt(privateKey, algorithm, encryptedText) {
         throw new Error(`API call failed with status: ${res.status}`);
     }
 
+    return res.json();
+}
+
+export async function validatePrime(prime) {
+
+    const res = await fetch(`${API_BASE}/checkPrime/${prime}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    });
+    if (!res.ok) {
+        throw new Error(`API call failed with status: ${res.status}`);
+    }
+    return res.json();
+}
+
+export async function computeE(phi_n) {
+
+    const res = await fetch(`${API_BASE}/calculateE/${phi_n}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    }); 
+    if (!res.ok) {
+        throw new Error(`API call failed with status: ${res.status}`);
+    }
+    return res.json();
+}
+
+export async function computeD(e, phi_n) {
+    const res = await fetch(`${API_BASE}/calculateD/${e}/${phi_n}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    });
+    if (!res.ok) {
+        throw new Error(`API call failed with status: ${res.status}`);
+    }
     return res.json();
 }

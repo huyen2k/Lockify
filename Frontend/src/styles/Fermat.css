@@ -1,0 +1,252 @@
+/* src/styles/Fermat.css - style cho Fermat UI + phần giải thích tiếng Việt
+   Updated: các nút đặt ngang hàng, hiển thị thời gian phản hồi
+*/
+
+:root {
+    --bg: #f7fbfd;
+    --card: #ffffff;
+    --muted: #6b7280;
+    --text: #0b1220;
+    --accent: #2f7fbf;
+    --border: #e6edf3;
+    --radius: 10px;
+    --shadow: 0 10px 30px rgba(2, 6, 23, 0.06);
+    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+}
+
+.fermat-ui {
+    max-width: 1100px;
+    margin: 18px auto;
+    padding: 12px;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto;
+    color: var(--text);
+}
+
+.fermat-layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 16px;
+}
+
+/* LEFT - CLI */
+.fd-wrapper {
+    background: var(--card);
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(2, 6, 23, 0.04);
+}
+
+.fd-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.fd-title {
+    font-weight: 800;
+    font-size: 18px;
+}
+
+.fd-meta {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.fd-meta .run-meta {
+    margin-left: 10px;
+    color: #0b1220;
+    font-weight: 600;
+}
+
+/* CONTROLS: buttons inline (ngang hàng) */
+.fd-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.fd-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* <-- nút đặt ngang hàng */
+.fd-buttons .btn {
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(2, 6, 23, 0.06);
+    background: transparent;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.fd-buttons .btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: transparent;
+}
+
+/* controls right */
+.fd-controls-right {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.speed {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+}
+
+.speed input[type="range"] {
+    width: 120px;
+}
+
+.speed-val {
+    font-weight: 700;
+    color: var(--muted);
+}
+
+.filter {
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+/* main log box */
+.fd-box {
+    background: #0c1220;
+    color: #e6f3ff;
+    border-radius: 10px;
+    padding: 12px;
+    font-family: var(--mono);
+    min-height: 360px;
+    max-height: 64vh;
+    overflow: auto;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.fd-empty {
+    color: var(--muted);
+    font-style: italic;
+}
+
+/* log lines */
+.fd-line {
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    background: rgba(255, 255, 255, 0.01);
+}
+
+.fd-test {
+    color: #cfe8ff;
+}
+
+.fd-found {
+    color: #dffbe6;
+    border-left: 3px solid #16a34a;
+    background: rgba(22, 163, 74, 0.04);
+}
+
+.fd-done {
+    color: #fff4dc;
+    border-left: 3px solid #f59e0b;
+    background: rgba(245, 158, 11, 0.04);
+}
+
+.fd-info {
+    color: #9fbbe0;
+}
+
+.fd-error {
+    color: #ffd6d6;
+    border-left: 3px solid #ef4444;
+    background: rgba(239, 68, 68, 0.04);
+}
+
+.fd-line.fd-current {
+    box-shadow: 0 8px 20px rgba(2, 6, 23, 0.06);
+    transform: translateY(-1px);
+}
+
+/* footer */
+.fd-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 8px;
+    color: var(--muted);
+}
+
+/* RIGHT - panel (explain + details) */
+.fd-panel {
+    background: var(--card);
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(2, 6, 23, 0.04);
+    height: 100%;
+}
+
+.panel-card h3 {
+    margin-top: 0;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+.explain-block {
+    margin-top: 8px;
+}
+
+.explain-block code {
+    font-family: var(--mono);
+    background: #f8fafc;
+    padding: 4px 6px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.step-details {
+    margin-top: 8px;
+}
+
+.detail-row {
+    margin-bottom: 6px;
+}
+
+.mono {
+    font-family: var(--mono);
+}
+
+/* hints */
+.hints {
+    margin-left: 18px;
+}
+
+/* responsive */
+@media (max-width: 980px) {
+    .fermat-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .fd-panel {
+        order: 2;
+    }
+
+    .fd-wrapper {
+        order: 1;
+    }
+}

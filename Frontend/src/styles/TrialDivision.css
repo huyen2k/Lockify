@@ -1,0 +1,270 @@
+/* TrialDivision.css — style cho TrialDivision, kèm phần giải thích tiếng Việt */
+
+:root {
+  --bg: #f7fbfd;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --text: #0b1220;
+  --accent: #2f7fbf;
+  --border: #e6edf3;
+  --radius: 10px;
+  --shadow: 0 10px 30px rgba(2, 6, 23, 0.06);
+}
+
+.trial-cli-root {
+  max-width: 980px;
+  margin: 18px auto;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto;
+  color: var(--text);
+}
+
+.trial-cli-card {
+  background: var(--card);
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(2, 6, 23, 0.04);
+}
+
+/* header */
+.trial-cli-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.trial-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.trial-meta {
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+/* EXPLANATION block (Vietnamese) */
+.trial-explain {
+  background: #fbfdff;
+  border: 1px solid var(--border);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.trial-explain h4 {
+  margin: 0 0 8px 0;
+  font-size: 15px;
+}
+
+.trial-explain .muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.trial-explain ol {
+  margin-left: 18px;
+}
+
+/* controls */
+.trial-cli-controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.controls-left .btn-t,
+.controls-right .btn-t {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(2, 6, 23, 0.06);
+  background: transparent;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.btn-t.primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+}
+
+.btn-t.active {
+  background: #1b6ea0;
+  color: #fff;
+}
+
+/* speed & filter */
+.speed {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.speed input[type="range"] {
+  width: 120px;
+}
+
+.speed-val {
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.filter {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+/* main layout */
+.trial-cli-main {
+  display: flex;
+  gap: 14px;
+}
+
+.cli-left {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* log box */
+.cli-log {
+  background: #0c1220;
+  color: #e6f3ff;
+  border-radius: 10px;
+  padding: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+  min-height: 320px;
+  max-height: 520px;
+  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.log-empty {
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* log lines */
+.log-line {
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.log-test {
+  color: #cfe8ff;
+  border-left: 3px solid rgba(255, 255, 255, 0.03);
+}
+
+.log-found {
+  color: #dffbe6;
+  border-left: 3px solid #16a34a;
+  background: rgba(22, 163, 74, 0.06);
+}
+
+.log-done {
+  color: #fff4dc;
+  border-left: 3px solid #f59e0b;
+  background: rgba(245, 158, 11, 0.06);
+}
+
+.log-info {
+  color: #9fbbe0;
+}
+
+.log-error {
+  color: #ffd6d6;
+  border-left: 3px solid #ef4444;
+  background: rgba(239, 68, 68, 0.06);
+}
+
+/* highlight current */
+.log-line.current {
+  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.08);
+  transform: translateY(-1px);
+}
+
+/* current card + explain small */
+.cli-bottom {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  align-items: flex-start;
+}
+
+.current-wrap {
+  flex: 1;
+}
+
+.trial-cli-current {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.trial-cli-current .title {
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.trial-cli-current .mono {
+  font-family: ui-monospace, monospace;
+}
+
+/* small explain */
+.explain-small {
+  width: 320px;
+  background: #fbfdff;
+  border: 1px solid var(--border);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.explain-small h4 {
+  margin: 0 0 6px 0;
+}
+
+.explain-small .muted {
+  color: var(--muted);
+}
+
+/* footer */
+.trial-cli-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  color: var(--muted);
+}
+
+/* responsive */
+@media (max-width: 900px) {
+  .trial-cli-card {
+    padding: 12px;
+  }
+
+  .cli-bottom {
+    flex-direction: column;
+  }
+
+  .explain-small {
+    width: 100%;
+  }
+
+  .trial-explain {
+    margin-bottom: 10px;
+  }
+}

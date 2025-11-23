@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Document(collection = "keypairs")
 @Data
 @NoArgsConstructor
@@ -13,8 +15,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class RSAKeyPair {
     @Id
     private String id;
-    private String publicKey;
-    private String privateKey;
-    private String algorithm;
-    private int keySize;
+    private List<String> publicKey;
+    private List<String> privateKey;
 }

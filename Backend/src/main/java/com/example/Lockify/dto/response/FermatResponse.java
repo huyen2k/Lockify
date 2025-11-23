@@ -1,5 +1,6 @@
 package com.example.Lockify.dto.response;
 
+import com.example.Lockify.model.FermatStep;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,10 +10,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class KeyResponse {
-    private String id;
-    private String val_p;
-    private String val_q;
-    private List<String> publicKey;
-    private List<String> privateKey;
+public class FermatResponse {
+    public List<FermatStep> steps;
 }

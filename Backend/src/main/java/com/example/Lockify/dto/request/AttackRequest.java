@@ -5,11 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class KeyExchangeRequest {
-    private String bits;
-    private String id;
+@AllArgsConstructor
+public class AttackRequest {
+    String e;
+    String n;
 }
-
-

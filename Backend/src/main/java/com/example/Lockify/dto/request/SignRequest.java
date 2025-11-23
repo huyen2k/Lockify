@@ -10,5 +10,4 @@ public class SignRequest {
     @NotBlank
     private String message;
     private String hashAlgorithm;
-    private String algorithm;
 }

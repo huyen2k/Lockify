@@ -5,11 +5,12 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Data
 public class EncryptRequest {
-    private String algorithm;
-    private String publicKey;
+    private List<String> publicKey;
     private String message;
 }

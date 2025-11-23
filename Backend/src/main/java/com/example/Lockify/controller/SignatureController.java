@@ -33,10 +33,12 @@ public class SignatureController {
     }
 
     // 2) Fetch public key for id
-    @GetMapping("/public/{id}")
-    public ResponseEntity<KeyResponse> getPublicKey(@PathVariable String id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<KeyResponse> getKey(@PathVariable String id) {
         return signatureService.findKeyPair(id)
-                .map(kp -> ResponseEntity.ok(new KeyResponse(kp.getId(), kp.getPublicKey())))
+                .map(kp -> ResponseEntity.ok(new KeyResponse(
+                        kp.getId(), kp.getPublicKey().get(0), kp.getPrivateKey().get(1), kp.getPublicKey(), kp.getPrivateKey()))
+                )
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -44,7 +46,7 @@ public class SignatureController {
     @PostMapping("/sign")
     public ResponseEntity<?> signDocument(@Valid @RequestBody SignRequest req) {
         try {
-            SignatureRecord sr = signatureService.signDocument(req);
+            SignatureRecord sr = signatureService.sign(req);
             return ResponseEntity.ok(sr);
         } catch (IllegalArgumentException e){
             return ResponseEntity.badRequest().body(e.getMessage());
