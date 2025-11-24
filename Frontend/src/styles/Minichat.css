@@ -232,9 +232,9 @@
     border: none;
 }
 
-.btn-primary {
+.btn-primarys {
     background: var(--accent);
-    color: white;
+    color: var(--text);
 }
 
 .btn-ghost {

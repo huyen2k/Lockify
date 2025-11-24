@@ -408,7 +408,7 @@ export default function Minichat() {
                                         placeholder="id for A"
                                         style={{ padding: 8, borderRadius: 8, border: "1px solid #e6edf3" }}
                                     />
-                                    <button className="btn btn-primary" onClick={handleLoginA}>
+                                    <button className="btn btn-primarys" onClick={handleLoginA}>
                                         Login
                                     </button>
                                 </div>
@@ -485,7 +485,7 @@ export default function Minichat() {
                                         placeholder="id for B"
                                         style={{ padding: 8, borderRadius: 8, border: "1px solid #e6edf3" }}
                                     />
-                                    <button className="btn btn-primary" onClick={handleLoginB}>
+                                    <button className="btn btn-primarys" onClick={handleLoginB}>
                                         Login
                                     </button>
                                 </div>
