@@ -5,7 +5,8 @@ Lockify là một dự án nhỏ, tìm hiểu về hệ mật RSA gồm mã hóa
 ## Chức năng chính
 
 - **Mã hóa RSA**: Hỗ trợ mã hóa và giải mã dữ liệu sử dụng khóa công khai và khóa riêng.
-- **Ký số số**: Cho phép ký dữ liệu bằng khóa riêng và xác minh chữ ký bằng khóa công khai.- **Thám mã** : Sử dụng các thuật toán Trial Division, Fermat và Quadratic Sieve để thám mã các số nguyên tố lớn.
+- **Ký số số**: Cho phép ký dữ liệu bằng khóa riêng và xác minh chữ ký bằng khóa công khai.
+- **Thám mã** : Sử dụng các thuật toán Trial Division, Fermat và Quadratic Sieve để thám mã các số nguyên tố lớn.
 
 ## Công nghệ sử dụng
 
@@ -18,6 +19,7 @@ Lockify là một dự án nhỏ, tìm hiểu về hệ mật RSA gồm mã hóa
 ## Cách sử dụng
 
 Thử nghiệm trên đường dẫn: [Lockify](https://lockify-iqnz.onrender.com)
+
 (Lưu ý: Dự án có thể mất một chút thời gian để khởi động lần đầu tiên do sử dụng dịch vụ Render miễn phí.)
 
 ## Tính năng trong tương lai
