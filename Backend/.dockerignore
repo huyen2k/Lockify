@@ -1,0 +1,77 @@
+# 1. Java build artifacts
+/target/
+*.class
+
+# 2. IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 3. Build outputs (generic)
+dist/
+build/
+out/
+debug/
+
+# 4. Test sources and outputs
+test/
+tests/
+*_test.go
+
+# 5. Version control
+.git/
+.gitignore
+.gitattributes
+.svn/
+.hg/
+
+# 6. Environment and secrets
+.env
+.env.*
+*.env
+*.pem
+*.key
+*.crt
+config.local.*
+*.local.yml
+
+# 7. Documentation and markdown
+docs/
+*.md
+README*
+HELP.md
+
+# 8. Docker and Compose files
+Dockerfile*
+docker-compose*
+
+# 9. Temporary and local files
+tmp/
+temp/
+*.tmp
+.local/
+local/
+
+# 10. Node.js, Python, Go (not present, but for completeness)
+node_modules/
+npm-debug.log
+yarn-debug.log
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.coverage
+/vendor/
+*.test
+.go-cache/
+
+# 11. Miscellaneous
+*.log
+
+# Exclusions: Do NOT ignore these (for clarity, not part of .dockerignore)
+# - .mvnw, .mvnw.cmd, .mvn/
+# - pom.xml
+# - src/
+# - application.properties
+# - .example files

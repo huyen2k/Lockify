@@ -10,6 +10,9 @@ import com.example.Lockify.service.RSAService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -25,32 +28,32 @@ public class RSAController {
     private RSAService rsaService;
 
     @PostMapping("/keygen")
-    public GenKeyResponse keyGen(@RequestBody GenKeyRequest request) throws Exception {
-        return rsaService.genKey(request);
+    public ResponseEntity<GenKeyResponse> keyGen(@RequestBody GenKeyRequest request) throws Exception {
+        return new ResponseEntity<>(rsaService.genKey(request), HttpStatus.OK) ;
     }
 
     @GetMapping("/checkPrime/{number}")
-    public Boolean checkPrime(@PathVariable String number) {
-        return rsaService.checkPrime(new BigInteger(number), Integer.parseInt("100"));
+    public ResponseEntity<Boolean> checkPrime(@PathVariable String number) {
+        return new ResponseEntity<>(rsaService.checkPrime(new BigInteger(number), Integer.parseInt("100")), HttpStatus.OK) ;
     }
 
     @GetMapping("/calculateE/{phi}")
-    public String calculateE(@PathVariable String phi) {
-        return rsaService.findPrimeE(new BigInteger(phi)).toString();
+    public ResponseEntity<String> calculateE(@PathVariable String phi) {
+        return new ResponseEntity<>(rsaService.findPrimeE(new BigInteger(phi)).toString(), HttpStatus.OK) ;
     }
 
     @GetMapping("/calculateD/{e}/{phi}")
-    public String calculateD(@PathVariable String e, @PathVariable String phi) {
-        return rsaService.findD(new BigInteger(e), new BigInteger(phi)).toString();
+    public ResponseEntity<String> calculateD(@PathVariable String e, @PathVariable String phi) {
+        return new ResponseEntity<>(rsaService.findD(new BigInteger(e), new BigInteger(phi)).toString(), HttpStatus.OK) ;
     }
 
     @PostMapping("/encrypt")
-    public EncryptResponse encrypt(@RequestBody EncryptRequest request) throws Exception {
-        return rsaService.encrypt(request);
+    public ResponseEntity<EncryptResponse> encrypt(@RequestBody EncryptRequest request) throws Exception {
+        return new ResponseEntity<>(rsaService.encrypt(request), HttpStatus.OK) ;
     }
 
     @PostMapping("/decrypt")
-    public DecryptResponse decrypt(@RequestBody DecryptRequest request) throws Exception {
-        return rsaService.decrypt(request);
+    public ResponseEntity<DecryptResponse> decrypt(@RequestBody DecryptRequest request) throws Exception {
+        return new ResponseEntity<>(rsaService.decrypt(request), HttpStatus.OK) ;
     }
 }

@@ -5,6 +5,8 @@ import com.example.Lockify.service.MessageService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,13 +21,14 @@ public class MessageController {
     private MessageService messageService;
 
     @PostMapping("/create")
-    public MessageRecord create(@RequestBody MessageRecord msg) {
-        return messageService.create(msg);
+    public ResponseEntity<MessageRecord> create(@RequestBody MessageRecord msg) {
+
+        return new ResponseEntity<>(messageService.create(msg), HttpStatus.OK);
     }
 
     @GetMapping("/inbox/{toId}/{fromId}")
-    public List<MessageRecord> inbox(@PathVariable String toId, @PathVariable String fromId) {
-        return messageService.inbox(toId, fromId);
+    public ResponseEntity<List<MessageRecord>> inbox(@PathVariable String toId, @PathVariable String fromId) {
+        return new ResponseEntity<>(messageService.inbox(toId, fromId), HttpStatus.OK);
     }
 
     @PostMapping("/inbox/clear/{toId}/{fromId}")

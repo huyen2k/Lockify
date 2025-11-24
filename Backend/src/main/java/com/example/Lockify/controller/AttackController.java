@@ -8,6 +8,8 @@ import com.example.Lockify.service.AttackService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,18 +22,18 @@ public class AttackController {
     private AttackService attackService;
 
     @PostMapping("/trial")
-    public TrialResponse getStepsTrial(@RequestBody AttackRequest req) {
-        return AttackService.findPrivateKeyDTrialDivision(req);
+    public ResponseEntity<TrialResponse> getStepsTrial(@RequestBody AttackRequest req) {
+        return new ResponseEntity<>(AttackService.findPrivateKeyDTrialDivision(req), HttpStatus.OK);
     }
 
     @PostMapping("/fermat")
-    public FermatResponse getStepsFermat(@RequestBody AttackRequest req) {
-        return AttackService.findPrivateKeyDFermat(req);
+    public ResponseEntity<FermatResponse> getStepsFermat(@RequestBody AttackRequest req) {
+        return new ResponseEntity<>(AttackService.findPrivateKeyDFermat(req), HttpStatus.OK);
     }
 
     @PostMapping("/sieve/{B}/{intervals}")
-    public QSResponse getStepsSieve(@RequestBody AttackRequest req, @PathVariable String B, @PathVariable String intervals) {
-        return AttackService.findPrivateKeyDQuadraticSieve(req, B, intervals);
+    public ResponseEntity<QSResponse> getStepsSieve(@RequestBody AttackRequest req, @PathVariable String B, @PathVariable String intervals) {
+        return new ResponseEntity<>(AttackService.findPrivateKeyDQuadraticSieve(req, B, intervals), HttpStatus.OK);
     }
 
 }
