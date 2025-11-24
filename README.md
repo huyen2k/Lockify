@@ -17,7 +17,8 @@ Lockify là một dự án nhỏ, tìm hiểu về hệ mật RSA gồm mã hóa
 
 ## Cách sử dụng
 
-Thử nghiệm trên đường dẫn: [Lockify](https://lockify.onrender.com/)
+Thử nghiệm trên đường dẫn: [Lockify](https://lockify-iqnz.onrender.com)
+(Lưu ý: Dự án có thể mất một chút thời gian để khởi động lần đầu tiên do sử dụng dịch vụ Render miễn phí.)
 
 ## Tính năng trong tương lai
 
